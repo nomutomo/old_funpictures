@@ -8,8 +8,11 @@ use App\User;
 
 use App\Message; //追加
 
+use App\Pickup; //追加
+
 use Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
@@ -115,24 +118,50 @@ class UsersController extends Controller
             
         }elseif (\Auth::id() === $user->id) {
             
+            //return $request;
+            
             if( $request->page === 'プロフィール') {
-                $page = 'mymenu.profile';
                 $this->validate($request, [
                     'name' => 'required|string|max:191',
-                    'email' => 'required|string|email|max:191|unique:users,email,' . \Auth::user()->email,
+                    'email' => ['required','string','email','max:191',
+                                Rule::unique('users')->ignore($user->id),
+                            ],
                     'profile' => 'max:191',
-                    'image_path' => 'max:191',
+                    'file' => [
+                        // アップロードされたファイルであること
+                        'file',
+                        // 画像ファイルであること
+                        'image',
+                        // MIMEタイプを指定
+                        'mimes:jpeg,jpg,png,gif',
+                        // 最小縦横120px 最大縦横400px
+                        'dimensions:min_width=120,min_height=120,max_width=400,max_height=400',
+                        // 文字数最大191
+                        'max:191',
+                    ]
                 ]);
+                
+                //return $request->file;
+                if (($request->file) !== null ) {
+                    $oldfile = $user->image_path;
+                    $filename = basename($request->file->store('public/avatar/' . $user->id));
+                } else {
+                    $filename = $user->image_path;
+                }
                 
                 $request->user()->update([
                     'name' => $request->name,
                     'email' => $request->email,
                     'profile' => $request->profile,
-                    'image_path' => $request->image_path,
+                    'image_path' => $filename
                 ]);
+                if (($request->file) !== null ) {
+                    Storage::delete('public/avatar/' . $user->id . '/' . $oldfile);
+                }
+                
+                return redirect('/')->with('message', $request->page . config('const.msg_0002'));
                 
             } elseif( $request->page === 'パスワード') {
-                $page = 'mymenu.password';
                 $this->validate($request, [
                     'password' => 'required|string|min:6|confirmed',
                     'password_confirmation' => 'required',

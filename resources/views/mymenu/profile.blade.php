@@ -14,11 +14,17 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">プロフィール変更</div>
                     <div class="panel-body">
-                        {!! Form::model(Auth::user(), ['route' => ['users.update', Auth::id()], 'method' => 'put']) !!}
+                        
+                        {!! Form::model(Auth::user(), ['route' => ['users.update', Auth::id()], 'method' => 'put','files' => true]) !!}
                         
                             <div class="form-group">
-                                {!! Form::label('image_path', 'プロフィール画像') !!}
-                                {!! Form::text('image_path', old('image_path'), ['class' => 'form-control']) !!}
+                                @if (Auth::user()->image_path)
+                                    <p>
+                                        <img src="{{ asset('storage/avatar/' . Auth::id() . '/' . Auth::user()->image_path) }}" alt="avatar" />
+                                    </p>
+                                @endif
+                                {!! Form::label('file', '新しい画像を選択', ['class' => 'control-label']) !!}
+                                {!! Form::file('file',old('file'), ['class' => 'form-control']) !!}
                             </div>
                             
                             <div class="form-group">
@@ -36,7 +42,6 @@
                                 {!! Form::text('profile', old('profile'), ['class' => 'form-control']) !!}
                             </div>
                             
-                            {!! Form::hidden('password', Auth::user()->password) !!}
                             {!! Form::hidden('page', 'プロフィール') !!}
                             
                             {!! Form::submit('プロフィール変更', ['class' => 'btn btn-primary btn-block']) !!}
@@ -50,5 +55,4 @@
                 {!! link_to_route('mymenu.account', 'アカウント削除（退会）はこちら') !!}
             </div>
         </div>
-        
 @endsection

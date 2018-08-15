@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','profile','image_path'
     ];
 
     /**
@@ -42,6 +42,15 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'user_follow', 'follow_id', 'user_id')->withTimestamps();
     }
     
+    public function pickups()
+    {
+        return $this->hasMany(Pickup::class);
+    }
+    
+    public function images()
+    {
+        return $this->hasManyThrough(Image::class, Message::class, 'user_id', 'message_id', 'id', 'id');
+    }
     
     public function follow($userId)
     {
@@ -83,4 +92,5 @@ class User extends Authenticatable
         $follow_user_ids[] = $this->id;
         return Message::whereIn('user_id', $follow_user_ids);
     }
+    
 }
