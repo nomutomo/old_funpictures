@@ -8,7 +8,7 @@ class Image extends Model
 {
     protected $fillable = ['image_path', 'message_id'];
     
-    public function user()
+    public function message()
     {
         return $this->belongsTo(Message::class);
     }

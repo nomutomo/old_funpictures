@@ -3,7 +3,7 @@
 @section('content')
     @if (Auth::check())
         <div class="row">
-            <aside class="col-xs-4">
+            <aside class="col-xs-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{{ $user->name }}</h3>
@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </aside>
-            <div class="col-xs-8">
+            <div class="col-xs-9">
                 @if (Auth::id() == $user->id)
                     {!! Form::open(['route' => 'messages.store']) !!}
                         <div class="form-group">
@@ -30,8 +30,8 @@
     @else
         <div class="center jumbotron">
             <div class="text-center">
-                <h1>Welcome to Fun! Pictures!!</h1>
-                {!! link_to_route('signup.get', 'Sign up now!', null, ['class' => 'btn btn-lg btn-primary']) !!}
+                <h1>ようこそ! Fun! Picturesへ!!</h1>
+                {!! link_to_route('signup.get', 'サインアップ', null, ['class' => 'btn btn-lg btn-primary']) !!}
             </div>
         </div>
     @endif

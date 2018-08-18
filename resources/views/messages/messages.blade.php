@@ -1,15 +1,20 @@
 <ul class="media-list">
     @foreach ($messages as $message)
-        <?php $user = $message->user; ?>
+        <?php 
+            $user = $message->user;
+        ?>
         <li class="media">
             <div class="media-left">
-                <img class="media-object img-rounded" src="{{ Gravatar::src($user->email, 50) }}" alt="">
+                <img class="media-object img-rounded" src="{{ asset('storage/avatar/' . $user->id . '/' . $user->image_path) }}" height="25px" alt="">
             </div>
             <div class="media-body">
                 <div>
                     {!! link_to_route('users.show', $user->name, ['id' => $user->id]) !!} <span class="text-muted"> - {{ $message->created_at }}</span>
                 </div>
                 <div>
+                    @if (isset($message->image_path))
+                        <p><img class="media-object img-rounded img-responsive" src="{{ asset('storage/avatar/' . $user->id . '/' . $message->image_path) }}" alt="avater"></p>
+                    @endif
                     <p>{!! nl2br(e($message->content)) !!}</p>
                 </div>
                 <div>

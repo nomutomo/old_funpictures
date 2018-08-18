@@ -10,9 +10,12 @@ use App\Message; //追加
 
 use App\Pickup; //追加
 
+use App\Image; //追加
+
 use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -31,7 +34,7 @@ class UsersController extends Controller
         
         if( isset($user) ) {
             
-            $messages = $user->messages()->orderBy('created_at', 'desc')->paginate(2);
+            $messages = $user->messages_withimage()->orderBy('created_at', 'desc')->paginate(5);
             $data = [
                 'user' => $user,
                 'messages' => $messages,
@@ -43,6 +46,63 @@ class UsersController extends Controller
         }
             
     }
+    
+    public function pickups($id) {
+    
+        $user = User::find($id);
+        
+        if( isset($user) ) {
+            
+            $messages = $user->pickup_messages()->orderBy('grid_no', 'asc')->paginate(9);
+            
+            /* $sql = 'select pickups.grid_no, pickups.grid_size, messages.*,' .
+                    ' images.image_path from messages inner join pickups' .
+                    ' on messages.id = pickups.message_id' .
+                    ' left join images on messages.id = images.message_id' .
+                    ' where messages.user_id = ' . $id .
+                    ' order by grid_no asc';
+           $messages = DB::select($sql); */
+
+            $data = [
+                'user' => $user,
+                'messages' => $messages,
+            ];
+            
+            $data += $this->counts($user);
+            
+            //return $data;
+            
+            return view('users.pickups', $data);
+        }else {
+            return back();
+        }
+    }
+    
+    public function edit() {
+    
+        $user = \Auth::user();
+        
+        if( isset($user) ) {
+            
+            $messages = $user->messages_withimage()->orderBy('created_at', 'desc')->paginate(5);
+            $pickups = $user->pickup_messages()->orderBy('grid_no', 'asc')->paginate(9);
+
+            $data = [
+                'user' => $user,
+                'messages' => $messages,
+                'pickups' => $pickups,
+            ];
+            
+            $data += $this->counts($user);
+            
+            //return $data;
+            
+            return view('mymenu.edit', $data);
+        }else {
+            return back();
+        }
+    }
+    
     
     public function followings($id)
     {
@@ -142,7 +202,8 @@ class UsersController extends Controller
                 ]);
                 
                 //return $request->file;
-                if (($request->file) !== null ) {
+                
+                if ($request->file !== null) {
                     $oldfile = $user->image_path;
                     $filename = basename($request->file->store('public/avatar/' . $user->id));
                 } else {
@@ -155,8 +216,10 @@ class UsersController extends Controller
                     'profile' => $request->profile,
                     'image_path' => $filename
                 ]);
-                if (($request->file) !== null ) {
-                    Storage::delete('public/avatar/' . $user->id . '/' . $oldfile);
+                if ($request->file !== null) {
+                    if (isset($oldfile)) {
+                        Storage::delete('public/avatar/' . $user->id . '/' . $oldfile);
+                    }
                 }
                 
                 return redirect('/')->with('message', $request->page . config('const.msg_0002'));

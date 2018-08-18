@@ -23,6 +23,7 @@ class MessagesController extends Controller
                 ];
             }
         }
+        //return $data;
         return view('welcome', $data);
     }
     

@@ -13,11 +13,13 @@ class Controller extends BaseController
     
     public function counts($user) {
         $count_messages = $user->messages()->count();
+        $count_pickups = $user->pickups()->count();
         $count_followings = $user->followings()->count();
         $count_followers = $user->followers()->count();
         
         return [
             'count_messages' => $count_messages,
+            'count_pickups' => $count_pickups,
             'count_followings' => $count_followings,
             'count_followers' => $count_followers,
         ];

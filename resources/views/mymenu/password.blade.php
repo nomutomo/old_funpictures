@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <ul class="nav nav-tabs nav-justified">
-                    <li role="presentation" class=""><a href="#">ピックアップ編集</a></li>
+                    <li role="presentation" class="{{ Request::is('edit') ? 'active' : '' }}"><a href="{{ route('mymenu.edit','') }}">ピックアップ編集</a></li>
                     <li role="presentation" class="{{ Request::is('account') ? 'active' : '' }}"><a href="{{ route('mymenu.profile','') }}">プロフィール編集</a></li>
                     <li role="presentation" class="{{ Request::is('password') ? 'active' : '' }}"><a href="{{ route('mymenu.password','') }}">パスワード変更</a></li>
                 </ul>
